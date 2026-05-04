@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://your-railway-backend-url.up.railway.app/api'
+  apiUrl: 'https://teamtaskmanager-production-7c0a.up.railway.app/'
 };
