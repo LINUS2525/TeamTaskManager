@@ -1,0 +1,33 @@
+@if (isAuthenticated()) {
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" routerLink="/dashboard" aria-label="Team Task Manager">
+        <span class="brand-mark">TT</span>
+        <span>
+          <strong>Team Task</strong>
+          <small>Manager</small>
+        </span>
+      </a>
+
+      <nav class="nav-list" aria-label="Primary navigation">
+        <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+        <a routerLink="/projects" routerLinkActive="active">Projects</a>
+        <a routerLink="/my-tasks" routerLinkActive="active">My Tasks</a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-chip">
+          <span>{{ authService.currentUser()?.name || 'User' }}</span>
+          <small>{{ authService.currentUser()?.email }}</small>
+        </div>
+        <button type="button" class="btn ghost full" (click)="logout()">Logout</button>
+      </div>
+    </aside>
+
+    <main class="main-panel">
+      <router-outlet />
+    </main>
+  </div>
+} @else {
+  <router-outlet />
+}

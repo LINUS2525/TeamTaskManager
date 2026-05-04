@@ -1,0 +1,139 @@
+<section class="page">
+  @if (loading) {
+    <div class="panel"><div class="empty-state">Loading project...</div></div>
+  } @else if (error) {
+    <div class="alert">{{ error }}</div>
+  } @else if (project) {
+    <header class="page-header">
+      <div>
+        <h1 class="page-title">{{ project.name }}</h1>
+        <p class="page-subtitle">{{ project.description || 'No description provided.' }}</p>
+      </div>
+      <div class="actions">
+        <a class="btn ghost" routerLink="/projects">Back</a>
+        @if (isAdmin()) {
+          <a class="btn" [routerLink]="['/projects', project.id, 'tasks', 'new']">New Task</a>
+          <button class="btn danger" type="button" [disabled]="actionLoading" (click)="deleteProject()">Delete</button>
+        }
+      </div>
+    </header>
+
+    <div class="grid two">
+      <section class="panel">
+        <div class="panel-body">
+          <div class="section-heading">
+            <h2>Members</h2>
+            <span class="badge">{{ project.myRole }}</span>
+          </div>
+
+          <div class="member-list">
+            @for (member of project.members; track member.id) {
+              <article class="member-row">
+                <div>
+                  <strong>{{ member.user.name }}</strong>
+                  <span>{{ member.user.email }}</span>
+                </div>
+                <div class="actions">
+                  <span class="badge">{{ member.role }}</span>
+                  @if (isAdmin()) {
+                    <button class="btn ghost compact" type="button" [disabled]="actionLoading" (click)="removeMember(member.user.id)">
+                      Remove
+                    </button>
+                  }
+                </div>
+              </article>
+            }
+          </div>
+
+          @if (isAdmin()) {
+            <form class="form add-member" [formGroup]="memberForm" (ngSubmit)="addMember()">
+              <div class="form-row">
+                <label for="memberEmail">Add member by email</label>
+                <input id="memberEmail" class="input" type="email" formControlName="email">
+              </div>
+              <div class="form-row">
+                <label for="role">Role</label>
+                <select id="role" class="select" formControlName="role">
+                  <option value="MEMBER">MEMBER</option>
+                  <option value="ADMIN">ADMIN</option>
+                </select>
+              </div>
+              @if (memberError) {
+                <div class="error-text">{{ memberError }}</div>
+              }
+              <button class="btn secondary" type="submit" [disabled]="memberLoading">
+                {{ memberLoading ? 'Adding...' : 'Add member' }}
+              </button>
+            </form>
+          }
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-body">
+          <div class="section-heading">
+            <h2>Task Summary</h2>
+            <span>{{ project.tasks.length }} tasks</span>
+          </div>
+          <div class="summary-grid">
+            <div><strong>{{ project.tasks.length }}</strong><span>Total</span></div>
+            <div><strong>{{ project.members.length }}</strong><span>Members</span></div>
+            <div><strong>{{ project.myRole }}</strong><span>Your role</span></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <section class="panel">
+      <div class="panel-body">
+        <div class="section-heading">
+          <h2>Tasks</h2>
+          @if (isAdmin()) {
+            <a class="btn secondary" [routerLink]="['/projects', project.id, 'tasks', 'new']">Create Task</a>
+          }
+        </div>
+
+        @if (project.tasks.length === 0) {
+          <div class="empty-state">No tasks in this project.</div>
+        } @else {
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Task</th>
+                  <th>Status</th>
+                  <th>Priority</th>
+                  <th>Due</th>
+                  <th>Assignee</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (task of project.tasks; track task.id) {
+                  <tr>
+                    <td>
+                      <strong>{{ task.title }}</strong>
+                      <small>{{ task.description }}</small>
+                    </td>
+                    <td><span class="badge" [class.todo]="task.status === 'TODO'" [class.progress]="task.status === 'IN_PROGRESS'" [class.done]="task.status === 'DONE'">{{ task.status }}</span></td>
+                    <td><span class="badge" [class.high]="task.priority === 'HIGH'">{{ task.priority }}</span></td>
+                    <td>{{ task.dueDate || 'No due date' }}</td>
+                    <td>{{ task.assignee?.name || 'Unassigned' }}</td>
+                    <td>
+                      <div class="actions">
+                        @if (isAdmin()) {
+                          <a class="btn ghost compact" [routerLink]="['/projects', project.id, 'tasks', task.id, 'edit']">Edit</a>
+                          <button class="btn danger compact" type="button" [disabled]="actionLoading" (click)="deleteTask(task.id)">Delete</button>
+                        }
+                      </div>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+    </section>
+  }
+</section>

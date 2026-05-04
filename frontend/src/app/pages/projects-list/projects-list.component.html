@@ -1,0 +1,33 @@
+<section class="page">
+  <header class="page-header">
+    <div>
+      <h1 class="page-title">Projects</h1>
+      <p class="page-subtitle">Projects you belong to, with your role and task volume.</p>
+    </div>
+    <a class="btn" routerLink="/projects/new">New Project</a>
+  </header>
+
+  @if (loading) {
+    <div class="panel"><div class="empty-state">Loading projects...</div></div>
+  } @else if (error) {
+    <div class="alert">{{ error }}</div>
+  } @else if (projects.length === 0) {
+    <div class="panel"><div class="empty-state">No projects yet. Create one to begin.</div></div>
+  } @else {
+    <div class="project-grid">
+      @for (project of projects; track project.id) {
+        <a class="project-card" [routerLink]="['/projects', project.id]">
+          <div>
+            <h2>{{ project.name }}</h2>
+            <span class="badge">{{ project.myRole }}</span>
+          </div>
+          <p>{{ project.description || 'No description provided.' }}</p>
+          <footer>
+            <span>{{ project.memberCount }} members</span>
+            <span>{{ project.taskCount }} tasks</span>
+          </footer>
+        </a>
+      }
+    </div>
+  }
+</section>

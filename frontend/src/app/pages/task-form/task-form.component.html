@@ -1,0 +1,80 @@
+<section class="page narrow">
+  <header class="page-header">
+    <div>
+      <h1 class="page-title">{{ taskId ? 'Edit Task' : 'Create Task' }}</h1>
+      <p class="page-subtitle">{{ project?.name || 'Project task' }}</p>
+    </div>
+    <a class="btn ghost" [routerLink]="['/projects', projectId]">Back</a>
+  </header>
+
+  @if (loading) {
+    <div class="panel"><div class="empty-state">Loading task form...</div></div>
+  } @else {
+    <section class="panel">
+      <div class="panel-body">
+        @if (error) {
+          <div class="alert">{{ error }}</div>
+        }
+
+        <form class="form" [formGroup]="form" (ngSubmit)="submit()">
+          <div class="form-row">
+            <label for="title">Title</label>
+            <input id="title" class="input" type="text" formControlName="title">
+            @if (form.controls.title.touched && form.controls.title.invalid) {
+              <span class="field-error">Task title is required.</span>
+            }
+          </div>
+
+          <div class="form-row">
+            <label for="description">Description</label>
+            <textarea id="description" class="textarea" formControlName="description"></textarea>
+          </div>
+
+          <div class="grid two">
+            <div class="form-row">
+              <label for="status">Status</label>
+              <select id="status" class="select" formControlName="status">
+                <option value="TODO">TODO</option>
+                <option value="IN_PROGRESS">IN_PROGRESS</option>
+                <option value="DONE">DONE</option>
+              </select>
+            </div>
+
+            <div class="form-row">
+              <label for="priority">Priority</label>
+              <select id="priority" class="select" formControlName="priority">
+                <option value="LOW">LOW</option>
+                <option value="MEDIUM">MEDIUM</option>
+                <option value="HIGH">HIGH</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid two">
+            <div class="form-row">
+              <label for="dueDate">Due date</label>
+              <input id="dueDate" class="input" type="date" formControlName="dueDate">
+            </div>
+
+            <div class="form-row">
+              <label for="assigneeId">Assignee</label>
+              <select id="assigneeId" class="select" formControlName="assigneeId">
+                <option value="">Unassigned</option>
+                @for (member of project?.members || []; track member.id) {
+                  <option [value]="member.user.id">{{ member.user.name }} - {{ member.user.email }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="btn" type="submit" [disabled]="saving">
+              {{ saving ? 'Saving...' : 'Save task' }}
+            </button>
+            <a class="btn ghost" [routerLink]="['/projects', projectId]">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </section>
+  }
+</section>

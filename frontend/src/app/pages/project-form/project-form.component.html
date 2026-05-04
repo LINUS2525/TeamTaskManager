@@ -1,0 +1,39 @@
+<section class="page narrow">
+  <header class="page-header">
+    <div>
+      <h1 class="page-title">Create Project</h1>
+      <p class="page-subtitle">You will become the admin for this project.</p>
+    </div>
+    <a class="btn ghost" routerLink="/projects">Back</a>
+  </header>
+
+  <section class="panel">
+    <div class="panel-body">
+      @if (error) {
+        <div class="alert">{{ error }}</div>
+      }
+
+      <form class="form" [formGroup]="form" (ngSubmit)="submit()">
+        <div class="form-row">
+          <label for="name">Project name</label>
+          <input id="name" class="input" type="text" formControlName="name">
+          @if (form.controls.name.touched && form.controls.name.invalid) {
+            <span class="field-error">Project name is required.</span>
+          }
+        </div>
+
+        <div class="form-row">
+          <label for="description">Description</label>
+          <textarea id="description" class="textarea" formControlName="description"></textarea>
+        </div>
+
+        <div class="actions">
+          <button class="btn" type="submit" [disabled]="loading">
+            {{ loading ? 'Creating...' : 'Create project' }}
+          </button>
+          <a class="btn ghost" routerLink="/projects">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </section>
+</section>

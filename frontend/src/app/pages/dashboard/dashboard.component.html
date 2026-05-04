@@ -1,0 +1,93 @@
+<section class="page">
+  <header class="page-header">
+    <div>
+      <h1 class="page-title">Dashboard</h1>
+      <p class="page-subtitle">A live summary of your project work and assigned tasks.</p>
+    </div>
+    <a class="btn" routerLink="/projects/new">New Project</a>
+  </header>
+
+  @if (loading) {
+    <div class="panel"><div class="empty-state">Loading dashboard...</div></div>
+  } @else if (error) {
+    <div class="alert">{{ error }}</div>
+  } @else if (dashboard) {
+    <div class="stats-grid">
+      <article class="stat-card">
+        <span>Total</span>
+        <strong>{{ dashboard.totalTasks }}</strong>
+      </article>
+      <article class="stat-card">
+        <span>TODO</span>
+        <strong>{{ dashboard.todoCount }}</strong>
+      </article>
+      <article class="stat-card">
+        <span>In Progress</span>
+        <strong>{{ dashboard.inProgressCount }}</strong>
+      </article>
+      <article class="stat-card">
+        <span>Done</span>
+        <strong>{{ dashboard.doneCount }}</strong>
+      </article>
+      <article class="stat-card overdue">
+        <span>Overdue</span>
+        <strong>{{ dashboard.overdueCount }}</strong>
+      </article>
+    </div>
+
+    <div class="grid two">
+      <section class="panel">
+        <div class="panel-body">
+          <div class="section-heading">
+            <h2>My Assigned Tasks</h2>
+            <a routerLink="/my-tasks">View all</a>
+          </div>
+
+          @if (dashboard.myAssignedTasks.length === 0) {
+            <div class="empty-state">No assigned tasks yet.</div>
+          } @else {
+            <div class="task-list">
+              @for (task of dashboard.myAssignedTasks.slice(0, 5); track task.id) {
+                <article class="task-row">
+                  <div>
+                    <strong>{{ task.title }}</strong>
+                    <span>{{ task.projectName }}</span>
+                  </div>
+                  <span class="badge" [class.todo]="task.status === 'TODO'" [class.progress]="task.status === 'IN_PROGRESS'" [class.done]="task.status === 'DONE'">{{ task.status }}</span>
+                </article>
+              }
+            </div>
+          }
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-body">
+          <div class="section-heading">
+            <h2>Project Progress</h2>
+            <a routerLink="/projects">Projects</a>
+          </div>
+
+          @if (dashboard.projectProgress.length === 0) {
+            <div class="empty-state">Create a project to start tracking progress.</div>
+          } @else {
+            <div class="progress-list">
+              @for (project of dashboard.projectProgress; track project.projectId) {
+                <article class="progress-item">
+                  <div class="progress-meta">
+                    <a [routerLink]="['/projects', project.projectId]">{{ project.projectName }}</a>
+                    <span>{{ project.completionPercent }}%</span>
+                  </div>
+                  <div class="progress-track">
+                    <div class="progress-fill" [style.width.%]="project.completionPercent"></div>
+                  </div>
+                  <small>{{ project.doneCount }} of {{ project.totalTasks }} done</small>
+                </article>
+              }
+            </div>
+          }
+        </div>
+      </section>
+    </div>
+  }
+</section>

@@ -1,0 +1,59 @@
+<section class="page">
+  <header class="page-header">
+    <div>
+      <h1 class="page-title">My Tasks</h1>
+      <p class="page-subtitle">Tasks assigned to you across all projects.</p>
+    </div>
+    <a class="btn ghost" routerLink="/projects">Projects</a>
+  </header>
+
+  @if (loading) {
+    <div class="panel"><div class="empty-state">Loading tasks...</div></div>
+  } @else if (error) {
+    <div class="alert">{{ error }}</div>
+  } @else if (tasks.length === 0) {
+    <div class="panel"><div class="empty-state">You do not have assigned tasks yet.</div></div>
+  } @else {
+    <section class="panel">
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Task</th>
+              <th>Project</th>
+              <th>Status</th>
+              <th>Priority</th>
+              <th>Due</th>
+              <th>Update</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (task of tasks; track task.id) {
+              <tr>
+                <td>
+                  <strong>{{ task.title }}</strong>
+                  <small>{{ task.description }}</small>
+                </td>
+                <td><a [routerLink]="['/projects', task.projectId]">{{ task.projectName }}</a></td>
+                <td><span class="badge" [class.todo]="task.status === 'TODO'" [class.progress]="task.status === 'IN_PROGRESS'" [class.done]="task.status === 'DONE'">{{ task.status }}</span></td>
+                <td><span class="badge" [class.high]="task.priority === 'HIGH'">{{ task.priority }}</span></td>
+                <td>{{ task.dueDate || 'No due date' }}</td>
+                <td>
+                  <select
+                    class="select compact-select"
+                    [ngModel]="task.status"
+                    [disabled]="updatingTaskId === task.id"
+                    (ngModelChange)="updateStatus(task, $event)">
+                    <option value="TODO">TODO</option>
+                    <option value="IN_PROGRESS">IN_PROGRESS</option>
+                    <option value="DONE">DONE</option>
+                  </select>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  }
+</section>
